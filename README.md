@@ -14,3 +14,4 @@ Calculate pi for benchmarking CPU and Golang math/big performance.
 |iPAD PRO 12”|567.864ms|1.150889s|
 |LINODE (64-bit, Intel(R) Xeon(R) CPU E5-2680 v2 @ 2.80GHz)|609.411574ms|1.376257438s|
 |POWER7 (64-bit, 4.024GHz)|930.47ms|2.070553s|
+|MACBOOK AIR (11-inch, Mid 2013)|674.439636ms|1.491307582s|
