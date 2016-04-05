@@ -1,6 +1,6 @@
 pi
 ==
-Calculate pi for benchmarking CPU performance
+Calculate pi for benchmarking CPU and Golang math/big performance.
 
 |System|pi 20000|pi 30000|
 |------|--------|--------|
