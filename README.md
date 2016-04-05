@@ -4,7 +4,7 @@ Calculate pi for benchmarking CPU and Golang math/big performance.
 
 |System|pi 20000|pi 30000|
 |------|--------|--------|
-|MININODE (ARM64, 1.2GHz)|2.613137s|5.827204s|
+|MININODE (HiKey ARM64, 1.2GHz)|2.613137s|5.827204s|
 |RASPBERRY PI 2 (ARM, 900MHz)|15.368202904s|34.245670972s|
 |RASPBERRY PI 3 (32-bit mode ARM64, 1.2GHz)|10.38048901s|23.299247129s|
 |ODROID-C2 (ARM64)|2.041021s|4.550732s|
