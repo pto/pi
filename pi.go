@@ -18,13 +18,13 @@ func main() {
 	fmt.Println("Duration:", time.Since(start))
 }
 
-func digitsFromCommandLine(default_digits int) int {
+func digitsFromCommandLine(default_digits int64) int64 {
 	if len(os.Args) > 2 || (len(os.Args) > 1 &&
 		(os.Args[1] == "-h" || os.Args[1] == "--help")) {
 		exitWithUsage()
 	}
 	if len(os.Args) > 1 {
-		if places, err := strconv.Atoi(os.Args[1]); err != nil {
+		if places, err := strconv.ParseInt(os.Args[1], 0, 64); err != nil {
 			fmt.Printf("%s: invalid number %s\n",
 				filepath.Base(os.Args[0]), os.Args[1])
 			exitWithUsage()
@@ -40,32 +40,35 @@ func exitWithUsage() {
 	os.Exit(1)
 }
 
-func π(digits int) *big.Int {
-	factor := big.NewInt(int64(digits))
-	ten := big.NewInt(10)
-	unity_exponent := big.NewInt(0).Add(factor, ten)
-	unity := big.NewInt(0).Exp(ten, unity_exponent, nil)
-	left := big.NewInt(0).Mul(big.NewInt(4), arccot(big.NewInt(5), unity))
-	right := arccot(big.NewInt(239), unity)
-	pi := big.NewInt(0).Mul(big.NewInt(4), big.NewInt(0).Sub(left, right))
-	return pi.Div(pi, big.NewInt(0).Exp(ten, ten, nil))
+func π(digits int64) *big.Int {
+	extraDigits := int64(10)
+	extraScale := new(big.Int).Exp(big.NewInt(10), big.NewInt(extraDigits), nil)
+	pi := new(big.Int).Mul(big.NewInt(4), arccot(5, digits+extraDigits))
+	pi.Sub(pi, arccot(239, digits+extraDigits))
+	pi.Mul(pi, big.NewInt(4))
+	pi.Div(pi, extraScale)
+	return pi
 }
 
-func arccot(x, unity *big.Int) *big.Int {
-	zero := big.NewInt(0)
-	minus_one := big.NewInt(-1)
-	x_squared := big.NewInt(0).Mul(x, x)
+func arccot(x int64, digits int64) *big.Int {
+	unity := new(big.Int).Exp(big.NewInt(10), big.NewInt(digits), nil)
 	coefficient := big.NewInt(1)
-	two := big.NewInt(2)
-	divisor := big.NewInt(0).Div(unity, x)
+	bigX := big.NewInt(x)
+	factor := new(big.Int).Div(unity, bigX)
+
+	negativeXSquared := big.NewInt(0).Mul(bigX, bigX)
+	negativeXSquared.Neg(negativeXSquared)
+
+	bigTwo := big.NewInt(2)
+	bigZero := big.NewInt(0)
+	term := big.NewInt(0)
 	sum := big.NewInt(0)
-	factor := big.NewInt(0).Div(divisor, coefficient)
-	for factor.Cmp(zero) != 0 {
-		sum.Add(sum, factor)
-		coefficient.Add(coefficient, two)
-		divisor.Mul(divisor, minus_one)
-		divisor.Div(divisor, x_squared)
-		factor.Div(divisor, coefficient)
+
+	for factor.Cmp(bigZero) != 0 {
+		term.Div(factor, coefficient)
+		sum.Add(sum, term)
+		coefficient.Add(coefficient, bigTwo)
+		factor.Div(factor, negativeXSquared)
 	}
 	return sum
 }
