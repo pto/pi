@@ -29,18 +29,18 @@ func main() {
 	start := time.Now()
 	digits := digitsFromCommandLine(1000)
 	scaledPi := fmt.Sprint(π(digits))
-	fmt.Printf("3.%s\n", scaledPi[1:])
+	fmt.Printf("%s.%s\n", scaledPi[0:1], scaledPi[1:])
 	fmt.Println("Duration:", time.Since(start))
 }
 
-func digitsFromCommandLine(default_digits int) int {
+func digitsFromCommandLine(default_digits int64) int64 {
 	args := flag.Args()
 	if len(args) > 1 || (len(args) == 1 &&
 		(args[0] == "-h" || args[0] == "--help")) {
 		exitWithUsage()
 	}
 	if len(args) == 1 {
-		if places, err := strconv.Atoi(args[0]); err != nil {
+		if places, err := strconv.ParseInt(args[0], 0, 64); err != nil {
 			fmt.Printf("%s: invalid number %s\n",
 				filepath.Base(os.Args[0]), args[0])
 			exitWithUsage()
@@ -56,31 +56,33 @@ func exitWithUsage() {
 	os.Exit(1)
 }
 
-func π(digits int) *big.Int {
-	precision := big.NewInt(int64(digits))
-	ten := big.NewInt(10)
-	unity_exponent := big.NewInt(0).Add(precision, ten)
-	unity := big.NewInt(0).Exp(ten, unity_exponent, nil)
-	left := big.NewInt(0).Mul(big.NewInt(4), arccot(big.NewInt(5), unity))
-	right := arccot(big.NewInt(239), unity)
-	pi := big.NewInt(0).Mul(big.NewInt(4), big.NewInt(0).Sub(left, right))
-	return pi.Div(pi, big.NewInt(0).Exp(ten, ten, nil))
+func π(digits int64) *big.Int {
+	extraDigits := int64(10)
+	extraScale := new(big.Int).Exp(big.NewInt(10), big.NewInt(extraDigits), nil)
+	pi := new(big.Int).Mul(big.NewInt(4), arccot(5, digits+extraDigits))
+	pi.Sub(pi, arccot(239, digits+extraDigits))
+	pi.Mul(pi, big.NewInt(4))
+	pi.Div(pi, extraScale)
+	return pi
 }
 
-func arccot(x, unity *big.Int) *big.Int {
-	zero := big.NewInt(0)
-	minus_x_squared := big.NewInt(0).Mul(x, x)
-	minus_x_squared.Neg(minus_x_squared)
+func arccot(littleX int64, digits int64) *big.Int {
+	unity := new(big.Int).Exp(big.NewInt(10), big.NewInt(digits), nil)
+	x := big.NewInt(littleX)
+	term := new(big.Int).Div(unity, x)
 	coefficient := big.NewInt(1)
+	negativeXSquared := big.NewInt(0).Mul(x, x)
+	negativeXSquared.Neg(negativeXSquared)
+	zero := big.NewInt(0)
 	two := big.NewInt(2)
-	term := big.NewInt(0).Div(unity, x)
 	sum := big.NewInt(0)
-	divisor := big.NewInt(0)
+	divisor := new(big.Int)
+
 	for term.Cmp(zero) != 0 {
 		sum.Add(sum, term)
 		term.Mul(term, coefficient)
 		coefficient.Add(coefficient, two)
-		divisor.Mul(minus_x_squared, coefficient)
+		divisor.Mul(negativeXSquared, coefficient)
 		term.Quo(term, divisor)
 	}
 	return sum
