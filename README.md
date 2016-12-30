@@ -2,6 +2,9 @@ pi
 ==
 Calculate pi for benchmarking CPU and Golang math/big performance.
 
+These measurements were made before eliminating a division nearly doubled 
+performance.
+
 |System|pi 20000|pi 30000|
 |------|--------|--------|
 |MININODE (HiKey ARM64, 1.2GHz)|2.613137s|5.827204s|

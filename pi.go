@@ -57,7 +57,7 @@ func exitWithUsage() {
 }
 
 func π(digits int64) *big.Int {
-	extraDigits := int64(10)
+	const extraDigits = 10
 	extraScale := new(big.Int).Exp(big.NewInt(10), big.NewInt(extraDigits), nil)
 	pi := new(big.Int).Mul(big.NewInt(4), arccot(5, digits+extraDigits))
 	pi.Sub(pi, arccot(239, digits+extraDigits))
@@ -71,8 +71,8 @@ func arccot(littleX int64, digits int64) *big.Int {
 	x := big.NewInt(littleX)
 	term := new(big.Int).Div(unity, x)
 	coefficient := big.NewInt(1)
-	negativeXSquared := big.NewInt(0).Mul(x, x)
-	negativeXSquared.Neg(negativeXSquared)
+	xSquared := big.NewInt(0).Mul(x, x)
+	negativeXSquared.Neg(xSquared)
 	zero := big.NewInt(0)
 	two := big.NewInt(2)
 	sum := big.NewInt(0)
