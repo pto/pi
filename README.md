@@ -2,8 +2,7 @@ pi
 ==
 Calculate pi for benchmarking CPU and Golang math/big performance.
 
-These measurements were made before eliminating a division nearly doubled 
-performance.
+Some measurements were made before eliminating a division nearly doubled performance.
 
 |System|pi 20000|pi 30000|
 |------|--------|--------|
